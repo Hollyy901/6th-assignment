@@ -16,7 +16,6 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 bg-[#0f0f11]/90 backdrop-blur-md border-b border-zinc-800/80">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
-        {/* Left Side: Brand Logo with exact image */}
         <Link href="/" className="flex items-center gap-2 group">
           <Image 
             src="/assets/logo.png" 
@@ -55,7 +54,7 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Right Side Status Badges */}
+        
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/my-plan"

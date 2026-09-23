@@ -1,6 +1,13 @@
-/** @type {import('next').NextConfig} */
+/** @type {import('next').NextModeConfig} */
 const nextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // Allows images from any remote domain
+      },
+    ],
+  },
 };
 
 export default nextConfig;
