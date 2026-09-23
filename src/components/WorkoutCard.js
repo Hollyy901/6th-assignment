@@ -1,15 +1,15 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useFitness } from '@/context/FitnessContext';
 
 export default function WorkoutCard({ workout }) {
   const { addToPlan, addToSaved, todayPlan = [], savedWorkouts = [] } = useFitness() || {};
 
-  const isInPlan = todayPlan.some((item) => item.id === workout.id);
-  const isSaved = savedWorkouts.some((item) => item.id === workout.id);
+  const isInPlan = todayPlan.some((item) => String(item.id) === String(workout.id));
+  const isSaved = savedWorkouts.some((item) => String(item.id) === String(workout.id));
 
-  // Fallback array for tags if API sends string or array
   const tags = Array.isArray(workout.tags) 
     ? workout.tags 
     : workout.muscleGroup 
@@ -18,7 +18,7 @@ export default function WorkoutCard({ workout }) {
 
   return (
     <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-all flex flex-col justify-between group shadow-lg">
-      <div>
+      <Link href={`/workouts/${workout.id}`} className="block">
         {/* Workout Image */}
         <div className="relative h-48 w-full overflow-hidden bg-zinc-800">
           <Image
@@ -32,7 +32,6 @@ export default function WorkoutCard({ workout }) {
 
         {/* Workout Content */}
         <div className="p-4 space-y-3">
-          {/* Muscle Tags */}
           <div className="flex flex-wrap gap-1.5">
             {tags.map((tag, idx) => (
               <span
@@ -44,9 +43,8 @@ export default function WorkoutCard({ workout }) {
             ))}
           </div>
 
-          {/* Title & Equipment */}
           <div>
-            <h3 className="font-extrabold text-lg text-white uppercase tracking-wide leading-tight">
+            <h3 className="font-extrabold text-lg text-white uppercase tracking-wide leading-tight group-hover:text-[#ccff00] transition-colors">
               {workout.title || workout.name}
             </h3>
             <p className="text-zinc-400 text-xs mt-0.5">
@@ -54,7 +52,6 @@ export default function WorkoutCard({ workout }) {
             </p>
           </div>
 
-          {/* Stats Bar */}
           <div className="flex items-center gap-4 text-zinc-400 text-xs font-medium pt-1">
             <span className="flex items-center gap-1">
               ⏱️ {workout.duration || '20'} min
@@ -67,7 +64,7 @@ export default function WorkoutCard({ workout }) {
             </span>
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* Action Buttons */}
       <div className="p-4 pt-0 grid grid-cols-2 gap-2 mt-2">
