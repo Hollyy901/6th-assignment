@@ -9,88 +9,55 @@ export function FitnessProvider({ children }) {
   const [savedWorkouts, setSavedWorkouts] = useState([]);
   const [completedWorkouts, setCompletedWorkouts] = useState([]);
   const [toast, setToast] = useState(null);
-  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const storedPlan = localStorage.getItem('fitlog_today_plan');
-      const storedSaved = localStorage.getItem('fitlog_saved');
-      const storedCompleted = localStorage.getItem('fitlog_completed');
-
-      if (storedPlan) setTodayPlan(JSON.parse(storedPlan));
-      if (storedSaved) setSavedWorkouts(JSON.parse(storedSaved));
-      if (storedCompleted) setCompletedWorkouts(JSON.parse(storedCompleted));
-    } catch (e) {
-      console.error('Failed to load storage:', e);
-    } finally {
-      setIsInitialized(true);
-    }
-  }, []);
-
-  // Save changes to localStorage
-  useEffect(() => {
-    if (!isInitialized) return;
-    localStorage.setItem('fitlog_today_plan', JSON.stringify(todayPlan));
-    localStorage.setItem('fitlog_saved', JSON.stringify(savedWorkouts));
-    localStorage.setItem('fitlog_completed', JSON.stringify(completedWorkouts));
-  }, [todayPlan, savedWorkouts, completedWorkouts, isInitialized]);
-
-  const showToast = (message, type = 'info') => {
+  // Helper function to show toast for 3 seconds
+  const showToast = (message, type = 'success') => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
   };
 
+  // Add to Today's Plan
   const addToPlan = (workout) => {
-    if (todayPlan.some((item) => item.id === workout.id)) {
-      showToast(`${workout.title} is already in today's plan!`, 'warning');
-      return false;
-    }
-
     if (todayPlan.length >= 5) {
-      showToast('Cap of 5 lifts reached for today! Finish them first.', 'warning');
-      return false;
+      showToast('Daily limit reached! You can only add up to 5 lifts.', 'warning');
+      return;
     }
-
-    setTodayPlan((prev) => [...prev, workout]);
-    showToast(`Added ${workout.title} to today's plan!`, 'success');
-    return true;
+    if (!todayPlan.some((item) => String(item.id) === String(workout.id))) {
+      setTodayPlan((prev) => [...prev, workout]);
+      showToast(`Added "${workout.title || workout.name}" to Today's Plan!`, 'success');
+    }
   };
 
-  const removeFromPlan = (workoutId) => {
-    const item = todayPlan.find((w) => w.id === workoutId);
-    setTodayPlan((prev) => prev.filter((w) => w.id !== workoutId));
-    setCompletedWorkouts((prev) => prev.filter((id) => id !== workoutId));
-    if (item) showToast(`Removed ${item.title} from plan.`, 'info');
+  // Remove from Today's Plan
+  const removeFromPlan = (id) => {
+    setTodayPlan((prev) => prev.filter((item) => String(item.id) !== String(id)));
+    showToast('Removed workout from Today\'s Plan', 'info');
   };
 
+  // Add to Saved
   const addToSaved = (workout) => {
-    if (savedWorkouts.some((item) => item.id === workout.id)) {
-      showToast(`${workout.title} is already in saved list!`, 'warning');
-      return false;
+    if (!savedWorkouts.some((item) => String(item.id) === String(workout.id))) {
+      setSavedWorkouts((prev) => [...prev, workout]);
+      showToast(`Saved "${workout.title || workout.name}" for later!`, 'success');
     }
-
-    setSavedWorkouts((prev) => [...prev, workout]);
-    showToast(`Saved ${workout.title} for later!`, 'success');
-    return true;
   };
 
-  const removeFromSaved = (workoutId) => {
-    const item = savedWorkouts.find((w) => w.id === workoutId);
-    setSavedWorkouts((prev) => prev.filter((w) => w.id !== workoutId));
-    if (item) showToast(`Removed ${item.title} from saved.`, 'info');
+  // Remove from Saved
+  const removeFromSaved = (id) => {
+    setSavedWorkouts((prev) => prev.filter((item) => String(item.id) !== String(id)));
+    showToast('Removed workout from Saved', 'info');
   };
 
-  const toggleCompleteWorkout = (workoutId) => {
-    const item = todayPlan.find((w) => w.id === workoutId);
-    const isDone = completedWorkouts.includes(workoutId);
-
-    if (isDone) {
-      setCompletedWorkouts((prev) => prev.filter((id) => id !== workoutId));
-      if (item) showToast(`Marked ${item.title} as incomplete`, 'info');
+  // Toggle Completed
+  const toggleCompleteWorkout = (id) => {
+    if (completedWorkouts.includes(id)) {
+      setCompletedWorkouts((prev) => prev.filter((itemId) => itemId !== id));
+      showToast('Marked workout as incomplete', 'info');
     } else {
-      setCompletedWorkouts((prev) => [...prev, workoutId]);
-      if (item) showToast(`Great job! Completed ${item.title}!`, 'success');
+      setCompletedWorkouts((prev) => [...prev, id]);
+      showToast('Great job! Workout completed! 🎉', 'success');
     }
   };
 
@@ -101,12 +68,12 @@ export function FitnessProvider({ children }) {
         savedWorkouts,
         completedWorkouts,
         toast,
+        showToast,
         addToPlan,
         removeFromPlan,
         addToSaved,
         removeFromSaved,
         toggleCompleteWorkout,
-        showToast,
       }}
     >
       {children}
@@ -114,4 +81,6 @@ export function FitnessProvider({ children }) {
   );
 }
 
-export const useFitness = () => useContext(FitnessContext);
+export function useFitness() {
+  return useContext(FitnessContext);
+}

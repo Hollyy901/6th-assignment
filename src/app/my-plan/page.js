@@ -24,7 +24,7 @@ function MyPlanContent() {
 
   const currentList = activeTab === 'plan' ? todayPlan : savedWorkouts;
 
-  // Calculate totals for stats bar
+  // Calculate totals
   const totalExercises = currentList.length;
   const totalMinutes = useMemo(() => {
     return currentList.reduce((acc, item) => acc + (parseInt(item.duration) || 0), 0);
@@ -34,7 +34,7 @@ function MyPlanContent() {
     return currentList.reduce((acc, item) => acc + (parseInt(item.calories) || 0), 0);
   }, [currentList]);
 
-  // Sort list logic
+  
   const sortedList = useMemo(() => {
     const list = [...currentList];
     if (sortBy === 'duration') {
@@ -69,7 +69,6 @@ function MyPlanContent() {
         </p>
       </div>
 
-      {/* Stats Overview Bar */}
       <div className="bg-zinc-900/80 border border-zinc-800/80 rounded-2xl p-6 grid grid-cols-3 gap-4 text-left shadow-xl">
         <div>
           <span className="text-zinc-500 font-bold text-xs uppercase tracking-wider block">
@@ -97,7 +96,7 @@ function MyPlanContent() {
         </div>
       </div>
 
-      {/* Controls Bar: Tabs + Sort Dropdown */}
+      {/* Controls Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
         {/* Tab Buttons */}
         <div className="flex items-center gap-2 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
@@ -123,7 +122,7 @@ function MyPlanContent() {
           </button>
         </div>
 
-        {/* Sort Dropdown */}
+        {/* Sort dropdown */}
         <div className="flex items-center gap-2">
           <span className="text-zinc-400 text-xs font-bold uppercase tracking-wider">
             Sort By
