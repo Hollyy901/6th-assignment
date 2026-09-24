@@ -1,6 +1,7 @@
 import './globals.css';
 import { FitnessProvider } from '@/context/FitnessContext';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import Toast from '@/components/Toast';
 
 export default function RootLayout({ children }) {
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {children}
           </main>
+          <Footer />
           <Toast />
         </FitnessProvider>
       </body>
