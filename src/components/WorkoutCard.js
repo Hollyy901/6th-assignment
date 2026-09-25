@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useFitness } from '@/context/FitnessContext';
 
 export default function WorkoutCard({ workout }) {
@@ -11,7 +12,9 @@ export default function WorkoutCard({ workout }) {
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-zinc-700 hover:scale-[1.01] transition-all duration-200 group">
-      <div>
+      
+      {/* Clickable Card Body (Navigates to detail page) */}
+      <Link href={`/workouts/${workout.id}`} className="block flex-1 cursor-pointer">
         {/* Card Header / Image */}
         <div className="relative h-48 w-full bg-zinc-800/50 overflow-hidden">
           {workout.image ? (
@@ -37,19 +40,22 @@ export default function WorkoutCard({ workout }) {
 
         {/* Card Content */}
         <div className="p-5 space-y-2">
-          <h3 className="text-lg font-bold text-white tracking-tight leading-snug">
+          <h3 className="text-lg font-bold text-white tracking-tight leading-snug group-hover:text-[#ccff00] transition-colors">
             {workout.title || workout.name}
           </h3>
           <p className="text-zinc-400 text-xs line-clamp-2 leading-relaxed">
             {workout.description || workout.instructions || 'Custom training exercise.'}
           </p>
         </div>
-      </div>
+      </Link>
 
-      {/* Action Buttons */}
+      {/* Action Buttons (Separated from navigation) */}
       <div className="p-5 pt-0 grid grid-cols-2 gap-2.5 mt-auto">
         <button
-          onClick={() => addToPlan(workout)}
+          onClick={(e) => {
+            e.stopPropagation();
+            addToPlan(workout);
+          }}
           disabled={isPlanned}
           className={`w-full py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-150 ${
             isPlanned
@@ -61,7 +67,10 @@ export default function WorkoutCard({ workout }) {
         </button>
 
         <button
-          onClick={() => addToSaved(workout)}
+          onClick={(e) => {
+            e.stopPropagation();
+            addToSaved(workout);
+          }}
           disabled={isSaved}
           className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 ${
             isSaved
@@ -72,6 +81,7 @@ export default function WorkoutCard({ workout }) {
           {isSaved ? 'Saved' : 'Save'}
         </button>
       </div>
+
     </div>
   );
 }
